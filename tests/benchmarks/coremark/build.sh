@@ -3,6 +3,10 @@
 # Copyright (C) 2019 Intel Corporation.  All rights reserved.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
+if [ -e "./build_complete.txt" ]; then
+    exit 0
+fi
+
 PLATFORM=$(uname -s | tr A-Z a-z)
 
 WAMRC="../../../wamr-compiler/build/wamrc"
@@ -37,6 +41,13 @@ ${WAMRC} -o coremark.aot coremark.wasm
 if [[ ${PLATFORM} == "linux" ]]; then
     echo "Compile coremark.wasm to coremark_segue.aot .."
     ${WAMRC} --enable-segue -o coremark_segue.aot coremark.wasm
+
+    echo "Compile coremark.wasm to coremark_segue_store.aot .."
+    ${WAMRC} --enable-segue=i32.store -o coremark_segue_store.aot coremark.wasm
+
+    echo "Compile coremark.wasm to coremark_segue_load.aot .."
+    ${WAMRC} --enable-segue=i32.load -o coremark_segue_load.aot coremark.wasm
 fi
 
+touch "./build_complete.txt"
 echo "Done"

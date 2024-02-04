@@ -24,12 +24,6 @@ function print_bench_name()
 {
     name=$1
     echo -en "$name" >> $REPORT
-    name_len=${#name}
-    if [ $name_len -lt $BENCH_NAME_MAX_LEN ]
-    then
-        spaces=$(( $BENCH_NAME_MAX_LEN - $name_len ))
-        for i in $(eval echo "{1..$spaces}"); do echo -n " " >> $REPORT; done
-    fi
 }
 
 echo "Start to run cases, the result is written to report.txt"
@@ -37,9 +31,9 @@ echo "Start to run cases, the result is written to report.txt"
 #run benchmarks
 cd $OUT_DIR
 if [[ ${PLATFORM} == "linux" ]]; then
-    echo -en "\t\t\t\t\t  native\tiwasm-aot\tiwasm-aot-segue\n" >> $REPORT
+    echo -en "\tnative\tiwasm-aot\tiwasm-aot-segue\tiwasm-aot-segue-store\tiwasm-aot-segue-load\n" >> $REPORT
 else
-    echo -en "\t\t\t\t\t  native\tiwasm-aot\n" >> $REPORT
+    echo -en "\tnative\tiwasm-aot\n" >> $REPORT
 fi
 
 for t in $SHOOTOUT_CASES
@@ -48,16 +42,29 @@ do
 
     echo "run $t with native .."
     echo -en "\t" >> $REPORT
-    $TIME -f "real-%e-time" ./${t}_native 2>&1 | grep "real-.*-time" | awk -F '-' '{ORS=""; print $2}' >> $REPORT
+    hyperfine -N --warmup 5 -m 10 --export-json ./hyperfine.out -i "./${t}_native"
+    cat ./hyperfine.out | jq '.results[0].median' | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' >> $REPORT
 
     echo "run $t with iwasm aot .."
     echo -en "\t" >> $REPORT
-    $TIME -f "real-%e-time" $IWASM_CMD ${t}.aot 2>&1 | grep "real-.*-time" | awk -F '-' '{ORS=""; print $2}' >> $REPORT
+    hyperfine -N --warmup 5 -m 10 --export-json ./hyperfine.out "$IWASM_CMD ${t}.aot"
+    cat ./hyperfine.out | jq '.results[0].median' | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' >> $REPORT
 
     if [[ ${PLATFORM} == "linux" ]]; then
         echo "run $t with iwasm aot segue .."
         echo -en "\t" >> $REPORT
-        $TIME -f "real-%e-time" $IWASM_CMD ${t}_segue.aot 2>&1 | grep "real-.*-time" | awk -F '-' '{ORS=""; print $2}' >> $REPORT
+        hyperfine -N --warmup 5 -m 10 --export-json ./hyperfine.out "$IWASM_CMD ${t}_segue.aot"
+        cat ./hyperfine.out | jq '.results[0].median' | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' >> $REPORT
+
+        echo "run $t with iwasm aot segue store .."
+        echo -en "\t" >> $REPORT
+        hyperfine -N --warmup 5 -m 10 --export-json ./hyperfine.out "$IWASM_CMD ${t}_segue_store.aot"
+        cat ./hyperfine.out | jq '.results[0].median' | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' >> $REPORT
+
+        echo "run $t with iwasm aot segue load .."
+        echo -en "\t" >> $REPORT
+        hyperfine -N --warmup 5 -m 10 --export-json ./hyperfine.out "$IWASM_CMD ${t}_segue_load.aot"
+        cat ./hyperfine.out | jq '.results[0].median' | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' >> $REPORT
     fi
 
     echo -en "\n" >> $REPORT

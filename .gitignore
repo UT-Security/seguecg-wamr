@@ -47,3 +47,4 @@ build_complete.txt
 tests/benchmarks/**/*.wasm
 tests/benchmarks/**/*_native
 tests/benchmarks/jetstream/**
+report.txt

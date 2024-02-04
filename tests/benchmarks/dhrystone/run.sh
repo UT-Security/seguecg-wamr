@@ -16,4 +16,10 @@ ${IWASM_CMD} dhrystone.aot
 if [[ ${PLATFORM} == "linux" ]]; then
     echo "============> run dhrystone_segue.aot"
     ${IWASM_CMD} dhrystone_segue.aot
+
+    echo "============> run dhrystone_segue_store.aot"
+    ${IWASM_CMD} dhrystone_segue_store.aot
+
+    echo "============> run dhrystone_segue_load.aot"
+    ${IWASM_CMD} dhrystone_segue_load.aot
 fi

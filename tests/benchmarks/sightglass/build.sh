@@ -3,6 +3,10 @@
 # Copyright (C) 2019 Intel Corporation.  All rights reserved.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
+if [ -e "./build_complete.txt" ]; then
+    exit 0
+fi
+
 PLATFORM=$(uname -s | tr A-Z a-z)
 
 OUT_DIR=$PWD/out
@@ -41,9 +45,16 @@ do
     if [[ ${PLATFORM} == "linux" ]]; then
         echo "Compile ${bench}.wasm into ${bench}_segue.aot"
         ${WAMRC_CMD} --enable-segue -o ${OUT_DIR}/${bench}_segue.aot ${OUT_DIR}/${bench}.wasm
+
+        echo "Compile ${bench}.wasm into ${bench}_segue_store.aot"
+        ${WAMRC_CMD} --enable-segue=i32.store -o ${OUT_DIR}/${bench}_segue_store.aot ${OUT_DIR}/${bench}.wasm
+
+        echo "Compile ${bench}.wasm into ${bench}_segue_load.aot"
+        ${WAMRC_CMD} --enable-segue=i32.load -o ${OUT_DIR}/${bench}_segue_load.aot ${OUT_DIR}/${bench}.wasm
     fi
 done
 
 cd ..
 
+touch "./build_complete.txt"
 echo "Done"
