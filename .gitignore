@@ -40,3 +40,10 @@ samples/workload/include/**
 !samples/workload/include/.gitkeep
 
 # core/iwasm/libraries/wasi-threads
+
+build_complete.txt
+**/out/*
+*.aot
+tests/benchmarks/**/*.wasm
+tests/benchmarks/**/*_native
+tests/benchmarks/jetstream/**
