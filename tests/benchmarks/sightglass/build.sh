@@ -54,7 +54,7 @@ do
     fi
 done
 
-cd ..
+cd ../../..
 
 touch "./build_complete.txt"
 echo "Done"
