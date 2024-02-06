@@ -25,5 +25,17 @@ if [[ ${PLATFORM} == "linux" ]]; then
     ${IWASM} coremark_segue_load.aot
 fi
 
+echo "Run coremark with wasm2c .."
+./coremark_wasm2c
+
+echo "Run coremark with wasm2c-segue .."
+./coremark_wasm2c_segue
+
+echo "Run coremark with wasm2c-segue store mode .."
+./coremark_wasm2c_segue_store
+
+echo "Run coremark with wasm2c-segue load mode.."
+./coremark_wasm2c_segue_load
+
 # echo "Run coremark with iwasm interpreter mode .."
 # ${IWASM} coremark.wasm
