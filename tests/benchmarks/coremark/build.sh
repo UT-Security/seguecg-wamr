@@ -57,7 +57,7 @@ SEGUECG_UVWASI_PATH=$SEGUECG_WASM2C_RUNTIME_PATH/third_party/uvwasi
 
 echo "Compiler coremark_wasm2c .."
 
-# $REP_ROOT_PATH/seguecg-wasm2c/build_release/wasm2c coremark.wasm -o ./coremark.wasm.c
+$REP_ROOT_PATH/seguecg-wasm2c/build_release/wasm2c coremark.wasm -o ./coremark.wasm.c
 
 clang -O3 -DWASM_RT_MEMCHECK_GUARD_PAGES=1 -o ./coremark_wasm2c ./coremark.wasm.c \
     $SEGUECG_WASM2C_RUNTIME_PATH/wasm2c/wasm-rt-impl.c $SEGUECG_WASM2C_RUNTIME_PATH/wasm2c/uvwasi-rt.c $SEGUECG_WASM2C_RUNTIME_PATH/wasm2c/wasm-rt-runner-static.c \
